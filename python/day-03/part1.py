@@ -35,7 +35,7 @@ def populate_grid(moving_input):
             x += move_x
             y += move_y
 
-            new_coordinate = str(x)+","+str(y)
+            new_coordinate = (x, y)
 
             coordinates_all.append(new_coordinate)
 
@@ -46,11 +46,9 @@ line_2 = populate_grid(moving_input_2)
 
 intersections = list(set(line_1) & set(line_2))
 
-#TODO: Clean this up
 for intersection in intersections:
-    intersection = intersection.split(",")
-    intersection = abs(int(intersection[0])) + abs(int(intersection[1]))
-    distances.append(intersection)
+    dist = abs(intersection[0]) + abs(intersection[1])
+    distances.append(dist)
     
 
 print("SOLUTION", min(distances))
