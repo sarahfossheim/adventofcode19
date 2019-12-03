@@ -34,6 +34,7 @@ def populate_grid(moving_input):
         if direction == "U":
             move_y = 1
 
+        #TODO: Clean up this
         for _ in range(0, distance):
             x += move_x
             y += move_y
@@ -43,17 +44,16 @@ def populate_grid(moving_input):
             coordinates_all.append(new_coordinate)
 
     return coordinates_all
-                
-
-            
-            
 
 line_1 = populate_grid(moving_input_1)
 line_2 = populate_grid(moving_input_2)
 
+#TODO: Clearer variable names
 crosses = list(set(line_1) & set(line_2))
 distances = []
 
+
+#TODO: Clean this up
 for cross in crosses:
     cross = cross.split(",")
     cross = abs(int(cross[0])) + abs(int(cross[1]))
