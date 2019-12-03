@@ -1,6 +1,3 @@
-# Set the coordinates
-distances = []
-
 # Get all the directions from the input
 from input import moving_input_1, moving_input_2
 
@@ -52,6 +49,7 @@ intersections = list(set(line_1.keys()) & set(line_2.keys()))
 
 # Get the shortest distance
 def get_shortest():
+    distances = []
     for intersection in intersections:
         dist = abs(intersection[0]) + abs(intersection[1])
         distances.append(dist)
