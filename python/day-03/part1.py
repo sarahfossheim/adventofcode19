@@ -1,5 +1,5 @@
 # Set the coordinates
-coordinates_double =  []
+distances = []
 
 # Get all the directions from the input
 moving_input_1 = ["R75","D30","R83","U83","L12","D49","R71","U7","L72"]
