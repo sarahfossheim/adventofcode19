@@ -31,7 +31,6 @@ def populate_grid(moving_input):
         if direction == "U":
             move_y = 1
 
-        #TODO: Clean up this
         for _ in range(0, distance):
             x += move_x
             y += move_y
