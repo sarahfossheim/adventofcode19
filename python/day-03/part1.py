@@ -1,5 +1,6 @@
 # Map out direction as if it was on a grid:
-directions_mapping = {"L": -1, "R": 1, "U": 1, "D": -1}
+directions_x = {"L": -1, "R": 1}
+directions_y = {"U": 1, "D": -1}
 
 # Set the coordinates
 coordinates_double =  []
@@ -24,15 +25,8 @@ def populate_grid(moving_input):
         distance = int(move[1:])
 
         move_x = move_y = 0
-
-        if direction == "L":
-            move_x = -1
-        if direction == "R":
-            move_x = 1
-        if direction == "D":
-            move_y = -1
-        if direction == "U":
-            move_y = 1
+        move_x = directions_x[direction] or 0
+        move_y = directions_y[direction] or 0
 
         #TODO: Clean up this
         for _ in range(0, distance):
@@ -48,16 +42,13 @@ def populate_grid(moving_input):
 line_1 = populate_grid(moving_input_1)
 line_2 = populate_grid(moving_input_2)
 
-#TODO: Clearer variable names
-crosses = list(set(line_1) & set(line_2))
-distances = []
-
+intersections = list(set(line_1) & set(line_2))
 
 #TODO: Clean this up
-for cross in crosses:
-    cross = cross.split(",")
-    cross = abs(int(cross[0])) + abs(int(cross[1]))
-    distances.append(cross)
+for intersection in intersections:
+    intersection = intersection.split(",")
+    intersection = abs(int(intersection[0])) + abs(int(intersection[1]))
+    distances.append(intersection)
     
 
 print("SOLUTION", min(distances))
