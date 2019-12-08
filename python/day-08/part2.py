@@ -1,10 +1,6 @@
 # Get the input
 from input import puzzle_input
 
-#puzzle_input = "1234222233331212"
-#puzzle_input = "00001111012012015555555555555555"
-#puzzle_input = "0222112222120000"
-
 # Set the width and height
 width = 25
 height = 6
@@ -22,27 +18,19 @@ for index in range(0,len(puzzle_input) + 1):
         layer += puzzle_input[index]
     
 index = 0
-colors = []
+colors = ""
 while index < len(layers[0]):
     for layer in layers:
         if layer[index] != "2":
-            # colors.append(layer[index])
             if layer[index] == "0":
-                colors.append(" ")
+                colors += " "
             else:
-                colors.append("1")
+                colors += "1"
             break
-        
     index += 1
 
-row = ""
-row_index = 0
-for color in colors:
-    row += color
+    if index % width == 0:
+        colors += "\n"
 
-    row_index += 1
 
-    if row_index % width == 0:
-        row += "\n"
-
-print(row)
+print(colors)
