@@ -1,18 +1,14 @@
 # Get the input
 from input import puzzle_input
 
-#puzzle_input = "1234222233331212"
-#puzzle_input = "00001111012012015555555555555555"
-
 # Set the width and height
 width = 25
 height = 6
 
 # Split the input up in layers
-layer_amount = len(puzzle_input) / (width * height)
 layers = []
 layer = ""
-for i in range(0,len(puzzle_input)):
+for i in range(0,len(puzzle_input) + 1):
     if i % (width * height) == 0:
         if layer:
             layers.append(layer)
