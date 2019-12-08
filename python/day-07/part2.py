@@ -8,6 +8,8 @@ class Amplifier:
         self.program_output = 0
         self.phase = 0
         self.input_processes = 0
+        self.stopped = False
+        self.index = 0
 
     def set_phase(self, value):
         self.phase = value
@@ -15,7 +17,14 @@ class Amplifier:
     def set_input(self, value):
         self.program_input = value
 
+    def set_output(self, value):
+        self.program_output = value
+
+    def is_stopped(self):
+        return self.stopped
+
     def get_input(self):
+        input_ = self.phase
         if self.input_processes == 0:
             input_ = self.phase
         elif self.input_processes == 1:
@@ -35,84 +44,87 @@ class Amplifier:
         return [A, B, C, DE]
 
     def run(self):
-        values = self.codes[:]
-        index = 0
         while True:
-            opcode = self.breakdown_codes(values[index])
+            opcode = self.breakdown_codes(self.codes[self.index])
             operation = opcode[3]
             mode_1 = opcode[2]
             mode_2 = opcode[1]
             mode_3 = opcode[0]
 
             # GET NUMBER INDECES
-            index_1 = values[index + 1] if mode_1 == 0 and index + 1 < len(values) else index + 1
-            index_2 = values[index + 2] if mode_2 == 0 and index + 2 < len(values) else index + 2
-            index_3 = values[index + 3] if mode_3 == 0 and index + 3 < len(values) else index + 3
+            index_1 = self.codes[self.index + 1] if mode_1 == 0 and self.index + 1 < len(self.codes) else self.index + 1
+            index_2 = self.codes[self.index + 2] if mode_2 == 0 and self.index + 2 < len(self.codes) else self.index + 2
+            index_3 = self.codes[self.index + 3] if mode_3 == 0 and self.index + 3 < len(self.codes) else self.index + 3
 
             # STOP
             if operation == 99:
-                return self.program_output
+                self.stopped = True
+                break
                 
             # ADDITION
             elif operation == 1:
-                number_1 = values[index_1]
-                number_2 = values[index_2]
-                values[index_3] = number_1 + number_2
-                index += 4
+                number_1 = self.codes[index_1]
+                number_2 = self.codes[index_2]
+                self.codes[index_3] = number_1 + number_2
+                self.index += 4
 
             # MULTIPLICATION
             elif operation == 2:
-                number_1 = values[index_1]
-                number_2 = values[index_2]
-                values[index_3] = number_1 * number_2
-                index += 4
+                number_1 = self.codes[index_1]
+                number_2 = self.codes[index_2]
+                self.codes[index_3] = number_1 * number_2
+                self.index += 4
 
             # INPUT
             elif operation == 3: 
                 input_ = self.get_input()
-                values[values[index + 1]] = input_
-                index += 2
+                self.codes[self.codes[self.index + 1]] = input_
+                self.index += 2
 
             # OUTPUT
             elif operation == 4: 
-                output = values[index_1]
+                output = self.codes[index_1]
                 self.program_output = output
-                index += 2
+                self.index += 2
 
             # JUMP
             elif operation == 5:
-                number_1 = values[index_1]
+                number_1 = self.codes[index_1]
                 if number_1 != 0:
-                    index = values[index_2]
+                    self.index = self.codes[index_2]
                 else:
-                    index += 3
+                    self.index += 3
 
             elif operation == 6:
-                number_1 = values[index_1]
+                number_1 = self.codes[index_1]
                 if number_1 == 0:
-                    index = values[index_2]
+                    self.index = self.codes[index_2]
                 else:
-                    index += 3
+                    self.index += 3
 
             elif operation == 7:
-                if values[index_1] < values[index_2]:
-                    values[index_3] = 1
+                if self.codes[index_1] < self.codes[index_2]:
+                    self.codes[index_3] = 1
                 else:
-                    values[index_3] = 0
-                index += 4
+                    self.codes[index_3] = 0
+                self.index += 4
 
             elif operation == 8:            
-                if values[index_1] == values[index_2]:
-                    values[index_3] = 1
+                if self.codes[index_1] == self.codes[index_2]:
+                    self.codes[index_3] = 1
                 else:
-                    values[index_3] = 0
-                index += 4
+                    self.codes[index_3] = 0
+                self.index += 4
 
 
 class AmplifierSequence:
     def __init__(self, codes, sequence):
         self.codes = codes
         self.sequence = sequence
+        # self.amplifiers = [Amplifier(codes) for _ in range(0,5)]
+        # for i in range(0,5):
+        #     self.amplifiers[i].set_phase(sequence[i])
+
         #
         self.amplifier_A = Amplifier(codes)
         self.amplifier_B = Amplifier(codes)
@@ -126,28 +138,34 @@ class AmplifierSequence:
         self.amplifier_D.set_phase(sequence[3])
         self.amplifier_E.set_phase(sequence[4])
 
+        self.amplifiers = [self.amplifier_A, self.amplifier_B, self.amplifier_C, self.amplifier_D, self.amplifier_E]
+
     def run(self):
-        self.amplifier_A.set_input(0)
-        self.amplifier_A.run()
-        #
-        self.amplifier_B.set_input(self.amplifier_A.get_output())
-        self.amplifier_B.run()
-        #
-        self.amplifier_C.set_input(self.amplifier_B.get_output())
-        self.amplifier_C.run()
-        #
-        self.amplifier_D.set_input(self.amplifier_C.get_output())
-        self.amplifier_D.run()
-        #
-        self.amplifier_E.set_input(self.amplifier_D.get_output())
-        self.amplifier_E.run()
+        last_amp = self.amplifiers[-1]
+        last_amp.set_output(0)
+        index = 0
+
+        while True:
+            if index > 4:
+                index = 0
+
+            current = self.amplifiers[index]
+            previous = self.amplifiers[index - 1]
+
+            current.set_input(previous.get_output())
+            current.run()
+
+            if current.is_stopped():
+                break
+            index += 1
+            
 
     def get_output(self):
-        return self.amplifier_E.get_output()
+        return self.amplifiers[-1].get_output()
 
 
 outcomes = {}
-gen_permutations = permutations(range(0,5))
+gen_permutations = permutations(range(5,10))
 for permutation in gen_permutations:
     amplifiers = AmplifierSequence(codes, permutation)
     amplifiers.run()

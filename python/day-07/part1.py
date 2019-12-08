@@ -113,7 +113,7 @@ class AmplifierSequence:
     def __init__(self, codes, sequence):
         self.codes = codes
         self.sequence = sequence
-        #
+        
         self.amplifier_A = Amplifier(codes)
         self.amplifier_B = Amplifier(codes)
         self.amplifier_C = Amplifier(codes)
@@ -129,16 +129,16 @@ class AmplifierSequence:
     def run(self):
         self.amplifier_A.set_input(0)
         self.amplifier_A.run()
-        #
+
         self.amplifier_B.set_input(self.amplifier_A.get_output())
         self.amplifier_B.run()
-        #
+
         self.amplifier_C.set_input(self.amplifier_B.get_output())
         self.amplifier_C.run()
-        #
+
         self.amplifier_D.set_input(self.amplifier_C.get_output())
         self.amplifier_D.run()
-        #
+
         self.amplifier_E.set_input(self.amplifier_D.get_output())
         self.amplifier_E.run()
 
